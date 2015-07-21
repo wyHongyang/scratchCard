@@ -42,35 +42,17 @@
 			param.value = value;
 			arr.push(param);
 			return arr;
+		},
+		addScriptTag : function(url,callback){
+			var src = url;
+			var pams = [];
+			matchParam(pams,'callback',callback);
+			src = addURIParam(src,pams);
+		  	var script = document.createElement('script');
+		  	script.setAttribute("type","text/javascript");
+		  	script.src = src;
+		  	document.body.appendChild(script);
 		}
 	});
 }));
-
-
-/*function addURIParam(uri,params){
-	var url = uri,
-		len = params.length;
-	url += (uri.indexOf('?') == -1 ? '?' : '&')
-	if(params && len){
-		if(len >= 1){
-			url += ($.map(params,function(n,i){
-				if(i == len-1){
-					return ''+n.name+'='+n.value;
-				}else{
-					return ''+n.name+'='+n.value+'&';
-				}
-			}).join(''));
-		}
-	}
-	return url;
-}
-
-function matchParam(paramArr,name,value){
-	var param = {},
-		arr = paramArr;
-	param.name = name;
-	param.value = value;
-	arr.push(param);
-	return arr;
-}*/
 

@@ -1,7 +1,19 @@
 /**
  * @author hzhongyang@corp.netease.com
  * @description scrollText
- * 
+ * ajax 参数 
+ * {
+ * 	code:200,
+ * 	content:{
+ * 		userCount:string
+ * 		users:[
+ *					{
+ *						uid:string
+ *						money:string
+ *					}
+ *			 ]
+ * 	}
+ * }
  */
 (function(factory){
 	if (typeof define === 'function' && define.amd) {
@@ -44,7 +56,8 @@
 		ajaxUrl:'',
 		lineHeight:'20px',
 		scrollStop:false,
-		direction :'up'
+		direction :'up',
+		max_num:5
 	};
 	
 	ScrollText.prototype.init = function(){
@@ -53,7 +66,7 @@
 		that.autoScroll();
 	};
 	
-	ScrollText.prototype.setContent = function(content){
+	ScrollText.prototype.setContent = function(data){
 		var that = this,
 			ul = $('<ul />',{
 				'class':'g-list',
@@ -69,23 +82,25 @@
 				url:that.options.ajaxUrl,
 				type:'GET',
 				success:function(data){
-					if(data && data.content.length){
-						html = $.map(data.content, function(n,i){
-							return '<li class="u-item">'+n.item+'</li>';
+					if(data && data.content.users.length){
+						that.setCount(data.content.userCount);
+						html = $.map(data.content.users, function(n,i){
+							return '<li class="u-item"><span class="u-uid">'+n.uid+'</span>刚刚获得了<span class="u-money">'+n.money+'</span>元现金</li>';
 						}).join('');
 					}else{
-						html = '<li class="u-item">没有内容</li>';
+						html = '<li class="u-item">当前没有用户参与</li>';
 					}
 					ul.append(html);
 				}
 			});
-		}else if(content){
-			if(content && content.length){
-				html = $.map(content, function(n,i){
-					return '<li class="u-item">'+n+'</li>';
+		}else if(data){
+			if(data && data.content.users.length){
+				that.setCount(data.content.userCount);
+				html = $.map(data.content.users, function(n,i){
+					return '<li class="u-item"><span class="u-uid">'+n.uid+'</span>刚刚获得了<span class="u-money">'+n.money+'</span>元现金</li>';
 				}).join('');
 			}else{
-				html = '<li class="u-item">没有内容</li>';
+				html = '<li class="u-item">当前没有用户参与</li>';
 			}
 			ul.append(html);
 		}else if(that.options.content){
@@ -94,11 +109,12 @@
 					return '<li class="u-item">'+n+'</li>';
 				}).join('');
 			}else{
-				html = '<li class="u-item">没有内容</li>';
+				html = '<li class="u-item">当前没有用户参与</li>';
 			}
 			ul.append(html);
 		}
-		that.$el.append(ul);
+		that.$el.empty().append(ul);
+		that.hideOverflow(that.options.max_num);
 	};
 	
 	ScrollText.prototype.setSpeed = function(speed){
@@ -131,7 +147,17 @@
 	ScrollText.prototype.mouseOut = function(){
 		this.autoScroll();
 	};
-	
+	ScrollText.prototype.setCount = function(num){
+		this.$el.siblings('.u-list-head').find('.u-num').empty().text(num);
+	};
+	//兼容ie
+	ScrollText.prototype.hideOverflow = function(num){
+		this.$el.find('.u-item').each(function(i,n){
+			if(i>num){
+				$(n).hide();
+			}
+		});
+	};
 	$.fn.scrollText = function(options, args){
 		return this.each(function(){
 			var $that = $(this),

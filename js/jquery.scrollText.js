@@ -52,7 +52,7 @@
 	
 	ScrollText.defaults = {
 		content:'',
-		speed:'1000',
+		speed:'1500',
 		ajaxUrl:'',
 		lineHeight:'20px',
 		scrollStop:false,
@@ -129,8 +129,18 @@
 		var that = this;
 		that.timer = setInterval(function(){
 			var me = this;
-			that.$el.find('.u-item:first-child').fadeIn(1500).appendTo(that.$el.find('.g-list'));
-		}, 1550);
+			that.scroll();
+		}, that.options.speed);
+	};
+	
+	ScrollText.prototype.scroll = function(){
+		var that = this;
+		if(that.options.direction == 'up'){
+			that.$el.find('.u-item:first-child').fadeIn(that.options.speed - 50).appendTo(that.$el.find('.g-list'));
+		}
+		if(that.options.direction == 'down'){
+			that.$el.find('.g-list').prepend(that.$el.find('.u-item:last-child').fadeIn(that.options.speed - 50));
+		}
 	};
 	
 	ScrollText.prototype.stop = function(scrollStop){

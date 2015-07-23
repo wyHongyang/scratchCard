@@ -58,7 +58,7 @@
 	//画图片并且新建canvas
 	ScratchCard.prototype.setCanvas = function(imageUrl){
 		var that = this;
-		var $canvas = $('<canvas class="j-canvas"/>').css({
+		var $canvas = $('<canvas class="j-canvas"></canvas>').css({
 			'width':'100%',
 			'height':'100%'
 		});
@@ -167,8 +167,8 @@
 			if(event.changedTouches){
 				event=event.changedTouches[event.changedTouches.length-1];
 			}
-			var posX = (event.clientX || event.pageX) - ($cvs.offset().left || 0),
-				posY = (event.clientY || event.pageY) - ($cvs.offset().top || 0);
+			var posX = (event.clientX + document.body.scrollLeft|| event.pageX) - ($cvs.offset().left || 0),
+				posY = (event.clientY + document.body.scrollTop|| event.pageY) - ($cvs.offset().top || 0);
 			that.lastPoint.x = posX;
 			that.lastPoint.y = posY;
 			console.log(posX +'|'+ posY);
@@ -186,8 +186,8 @@
 			if(event.changedTouches){
 				event=event.changedTouches[event.changedTouches.length-1];
 			}
-			var posX = (event.clientX || event.pageX) - ($cvs.offset().left || 0),
-				posY = (event.clientY || event.pageY) - ($cvs.offset().top || 0);
+			var posX = (event.clientX + document.body.scrollLeft|| event.pageX) - ($cvs.offset().left || 0),
+				posY = (event.clientY + document.body.scrollTop|| event.pageY) - ($cvs.offset().top || 0);
 			ctx.beginPath();
 			ctx.strokeStyle = that.options.penColor;
 	        ctx.lineWidth = that.options.penWidth;

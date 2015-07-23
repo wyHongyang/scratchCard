@@ -10,9 +10,9 @@ This is a plugin about  `scrollText`
 插件支持amd和cmd的加载方式，相当于一个小模块
 ###参数 param
 ####1.content
-  	提供了两种填写list表单的方法<br/>
-  	一种是直接填写content list<br/>
-  	第二种是通过ajax获取后台返回的list<br/>
+  	提供了两种填写list表单的方法
+  	一种是直接填写content list
+  	第二种是通过ajax获取后台返回的list
 ####2.speed
   	设置滚动的速度
 ####3.ajaxUrl

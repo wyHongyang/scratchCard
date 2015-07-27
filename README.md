@@ -46,7 +46,6 @@ This is a plugin about  `scrollText`
 ####5.可以通过css控制显示几条
 	  .u-item:nth-child(n+7){ display:none; }来控制显示6个 （提醒：nth-child 只兼容ie9及以上需要兼容ie7、8,请自寻方法）	
 #####6.待续...
-  	提供不同类型的滚动	
 ### 使用
 	<div class="m-scrollText"></div>
 	$('.m-scrollText').scrollText({

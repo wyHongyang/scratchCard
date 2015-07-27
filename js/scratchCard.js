@@ -35,24 +35,28 @@
 	ScratchCard.defaults = {
 		penColor:'#fff',
 		penWidth:25,
-		bgcolor:'#000',
+		bgcolor:'#8b8b8b',
 		font:'800 20px Microsoft Yahei',
 		fontColor:'#fff',
-		fillText:'刮开刮刮卡，看看中了多少钱！',
-		percentage: 30,
+		fillText:'刮开刮刮卡，看看中了多少！',
+		percentage: 15,
 		imageUrl:'',
 		hasOpened:false,
 		jsonp:false,
 		imageJsonpUrl:'',
-		canvasWidth:'400',
-		canvasHeight:'400',
+		imageWdith:'400',
+		imageHeight:'400',
 		setPrize:$.noop
 	};
 	
 	//init
 	ScratchCard.prototype.init = function(){
-		this.setEvent();
-		this.setCanvas();
+		if(this.options.hasOpened){
+			this.setPrize();
+		}else{
+			this.setEvent();
+			this.setCanvas();
+		}
 	};
 	
 	//画图片并且新建canvas
@@ -66,6 +70,8 @@
 		//如果是图片如果是跨域的方式请求，我们将采用jsonp的形式获取克隆一个图片
 		if(that.options.jsonp){
 			that.getImageByJsonp(that.options.imageJsonpUrl, that.callback);
+		}else if(imageUrl){
+			that.drawImages();
 		}else{
 			that.drawColor();
 		}
@@ -88,7 +94,19 @@
 		img.onload = function(){
 			var $cvs = that.$el.find('.j-canvas'),
 				ctx = $cvs[0].getContext('2d');
-			ctx.drawImage(img,0,0,that.options.canvasWidth,that.options.canvasHeight);	
+			ctx.drawImage(img,0,0,that.options.imageWdith,that.options.imageHeight);	
+		};
+	};
+	
+	//如果图片没有跨域
+	ScratchCard.prototype.drawImages = function(){
+		var that = this;
+		var img = new Image();
+		image.src = that.options.imageUrl;
+		img.onload = function(){
+			var $cvs = that.$el.find('.j-canvas'),
+				ctx = $cvs[0].getContext('2d');
+			ctx.drawImage(img,0,0,that.options.imageWdith,that.options.imageHeight);	
 		};
 	};
 	
@@ -98,14 +116,14 @@
 			ctx = $cvs[0].getContext('2d'),
 			that = this;
 		ctx.fillStyle = that.options.bgcolor;
-		ctx.fillRect(0,0,that.options.canvasWidth,that.options.canvasHeight);
+		ctx.fillRect(0,0,that.options.imageWdith,that.options.imageHeight);
 		ctx.beginPath();
 		ctx.font = that.options.font;
 		ctx.textAlign = 'start';
         ctx.textBaseline = 'middle';
         ctx.fillStyle = that.options.fontColor;
 //        ctx.globalCompositeOperation = "source-over";
-        ctx.fillText(that.options.fillText,that.options.canvasWidth*0.05,that.options.canvasHeight*0.2,that.options.canvasWidth*0.9);
+        ctx.fillText(that.options.fillText,that.options.imageWdith*0.05,that.options.imageHeight*0.2,that.options.imageWdith*0.9);
 	};
 	
 	//bind event
@@ -113,12 +131,14 @@
 		var $cvs = this.$el.find('.j-canvas'),
 			that = this;
 		$cvs.on(START_EVT,function(e){
+			that.mousedown = true;
 			that.touchHandle(e);
 		});
 		$cvs.on(MOVE_EVT,function(e){
 			that.touchHandle(e);		
 		});
 		$cvs.on(END_EVT,function(e){
+			that.mousedown = false;
 			that.touchHandle(e);
 		});
 	};
@@ -145,14 +165,12 @@
 		e.preventDefault();
 		switch (e.type) {
 			case that.START_EVT:
-				that.mousedown = true;
 				that.savePoint();
 				break;
 			case that.MOVE_EVT:
 				that.moveHandle(e);
 				break;
 			case that.END_EVT:
-				that.mousedown = false;
 				break;
 		}
 	};
@@ -195,7 +213,7 @@
 	        ctx.moveTo(that.lastPoint.x,that.lastPoint.y);
 	        ctx.lineTo(posX,posY);
 	        console.log('currentPoint:'+posX + '|'+ posY);
-//	        ctx.fill(); 
+	        ctx.fill(); 
 	        ctx.stroke(); 
 	        that.lastPoint.x = posX;
 	        that.lastPoint.y = posY;
@@ -241,12 +259,12 @@
 		var $cvs = this.$el.find('.j-canvas'),
 			ctx = $cvs[0].getContext('2d'),
 			that = this;
-		var imgData = ctx.getImageData(0,0,that.options.canvasWidth,that.options.canvasHeight).data,
+		var imgData = ctx.getImageData(0,0,that.options.imageWdith,that.options.imageHeight).data,
 			totalArea = $cvs.width() * $cvs.height(),
 			RGB = that.color2rgb(),
 			unClearArea = 0;
 		for(var i = 0, len = imgData.length; i < len; i += 4) {
-	        if (imgData[i] === RGB.R && imgData[i + 1] === RGB.G && imgData[i + 2] === RGB.B) {
+	        if (imgData[i] === RGB.R && imgData[i + 1] === RGB.G && imgData[i + 2] === RGB.B && imgData[i + 3] === 255) {
 	          unClearArea ++;
 	        }
 	    }
@@ -260,7 +278,7 @@
 	
 	//设置奖品的接口
 	ScratchCard.prototype.setPrize = function(){
-//		this.options.setPrize.call(this,this.$el);
+		this.options.setPrize.call(this);
 	};
 	
 	//reset canvas
@@ -268,7 +286,7 @@
 		this.init();
 	};
 	
-	$.fn.scratchCard = function(args, options){
+	$.fn.scratchCard = function(options, args){
 		return this.each(function(){
 			var $this = $(this);
 			data = $this.data('scratchcard');

@@ -1,5 +1,5 @@
 /**
- * @author hzhongyang@corp.netease.com
+ * @author hy
  * @description scrollText
  * ajax 参数 
  * {

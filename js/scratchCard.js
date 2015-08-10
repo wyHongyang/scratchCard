@@ -3,7 +3,7 @@
  * 利用canvas模拟刮刮卡
  * @version 1.0.1
  * @description 快速生成刮刮卡
- * @author hzhongyang@crop.netease.com
+ * @author hy
  * */
 
 (function(factory){
